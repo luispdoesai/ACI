@@ -1,0 +1,24 @@
+name: ACI Daily Pipeline Sweep
+
+on:
+  schedule:
+    # Runs daily at 08:00 UTC (3:00 AM EST / 12:00 AM PST)
+    - cron: '0 8 * * *'
+  # Allows manual execution from the GitHub Actions tab
+  workflow_dispatch:
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run ACI Workspace Sweep
+        run: |
+          python automations/cron/scheduled_tasks.py
