@@ -6,7 +6,7 @@ ACI transforms any AI Agent (**Claude Code**, **Gemini**, **Antigravity**, **Cur
 
 Instead of re-explaining your background, brand voice, target clients, and workflows in every new chat, ACI provides a central **Brain** (`brain/`) and dedicated **Operational Engines** that adapt to your exact daily work.
 
-This README covers three things: **why the architecture works**, **the proof it produces calibrated output**, and **how to actually run it**.
+This README covers four things: **why the architecture works**, **the empirical research backing the design**, **the proof it produces calibrated output**, and **how to actually run it**.
 
 ---
 
@@ -71,6 +71,20 @@ Autonomous agents frequently fail by loading dozens of raw files into context, c
 | **Error Corrections** | Multi-turn chat corrections resending full context | Recursive self-retry loops often fail or loop indefinitely | Single write to `memory.md` prevents repeat errors | **~80% savings** |
 
 > **On these numbers**: the prompt-caching figure (up to 90%) matches [Anthropic's published prompt-caching discount](https://docs.claude.com/en/docs/build-with-claude/prompt-caching) for cached input tokens. The rest are order-of-magnitude illustrations based on typical workflow shapes, not measured benchmarks — actual savings depend on your prompt sizes and how much of a task is deterministic Python vs. LLM-driven.
+
+---
+
+## 📚 Empirical Research & Theoretical Foundations
+
+ACI's core architectural choices are grounded in published research across computational linguistics, LLM systems, and agent architecture:
+
+| Architectural Choice in ACI | Published Research & Benchmarks | Core Finding & Validation |
+| :--- | :--- | :--- |
+| **Lazy Loading & Map/Territory** ([`brain/workspace_index.md`](brain/workspace_index.md)) | *"Lost in the Middle: How Language Models Use Long Contexts"* (Liu et al., Stanford / UC Berkeley, *TACL 2024*) | Attention degrades when relevant context is placed in the middle of long prompts. Isolating active context to brief maps prevents context saturation. |
+| **Deterministic Python Offloading** ([`automations/scripts/`](automations/scripts/)) | *"Program-Aided Language Models (PAL)"* (Gao et al., CMU, *ICML 2023*) / *"Program of Thoughts (PoT)"* (Chen et al., *TMLR 2023*) | Decoupling reasoning from execution by delegating data processing to a runtime interpreter eliminates arithmetic and syntax hallucinations at zero token cost. |
+| **Golden In-Context Examples** (`<engine>/examples/`) | *"Rethinking the Role of Demonstrations: What Makes In-Context Learning Work?"* (Min et al., Meta AI / UW, *EMNLP 2022*) | Concrete demonstrations anchor format, output boundaries, and label distribution far more reliably than abstract system prompt instructions. |
+| **Single-Agent File Staging vs. Swarms** (`drafts/` to `published/`) | *"From Spark to Fire: Modeling and Mitigating Error Cascades in LLM-Based Multi-Agent Collaboration"* (2026) / *"Towards Long-Horizon Agents: A Survey"* (2026) | Autonomous multi-agent pipelines suffer from compounding error cascades ("compound interest in reverse") and autonomy drift. File-based staging creates verifiable checkpoints. |
+| **Static Markdown Prefixes** ([`brain/identity.md`](brain/identity.md), [`rules.md`](brain/rules.md)) | *Anthropic & Google Prompt Caching Technical Specifications (2024-2026)* | Stable prompt prefixes enable KV-cache reuse, reducing input token costs by up to 90% and cutting latency by up to 80%. |
 
 ---
 
