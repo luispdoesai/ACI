@@ -27,3 +27,4 @@
 ## 📝 Recent Decision Log
 - `2026-09-01`: Initialized ACI open-source framework with 8 operational engines and 3-Tier Blueprint.
 - `2026-09-05`: Implemented deterministic workspace indexer (`automations/scripts/index_workspace.py`) & linked auto-sweep to `brain/workspace_index.md`.
+- `2026-09-10`: Integrated empirical research and academic foundations matrix into `README.md` to formally document system design principles.
