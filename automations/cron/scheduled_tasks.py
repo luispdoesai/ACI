@@ -19,6 +19,11 @@ try:
 except ImportError:
     build_and_save_index = None
 
+try:
+    from automations.scripts.archive_memory import archive_memory
+except ImportError:
+    archive_memory = None
+
 
 def count_files(directory_path: Path, extensions=(".md", ".txt")) -> int:
     """Count non-hidden files matching extensions in a directory."""
@@ -65,6 +70,17 @@ def run_pipeline_sweep():
         print(f"🧠 Brain Status: Persistent memory log active ({memory_file.name})")
     else:
         print(f"⚠️  Brain Warning: brain/memory.md not found. Run setup interview.")
+
+    # Archive stale Decision Log entries so memory.md doesn't drift/bloat
+    if archive_memory:
+        try:
+            archive_res = archive_memory(root_dir)
+            if archive_res["entries_archived"] > 0:
+                print(f"🗄️  Memory Archive: Moved {archive_res['entries_archived']} stale Decision Log entries -> brain/archive/")
+            else:
+                print(f"🗄️  Memory Archive: No entries older than {archive_res['cutoff_date']}, nothing to archive.")
+        except Exception as e:
+            print(f"⚠️  Memory Archive Warning: Could not archive memory.md: {e}")
 
     print(f"✅ Sweep Complete: All systems operational. Zero errors.")
     print(f"==================================================")

@@ -58,6 +58,7 @@ Autonomous agents frequently fail by loading dozens of raw files into context, c
 #### 4. Closed-Loop Failure Recovery and Benchmark Promotion
 - Failure Prevention: When a script breaks or output requires correction, the failure mode is logged to `brain/memory.md` under `## 🚫 Corrected Mistakes`. Subsequent sessions check this ledger before generating work.
 - Quality Anchoring: When a deliverable meets production quality, it is stored in that module's `examples/` directory. Future prompts use these proven assets as few-shot references.
+- Anti-Drift: Not every section of `memory.md` should live forever. Corrected Mistakes and Learned Preferences are permanent, but the Recent Decision Log is a dated project journal, so it's the part meant to accumulate. `automations/scripts/archive_memory.py` runs on the daily sweep and moves Decision Log entries older than 90 days into `brain/archive/decision_log_<year>.md`, keeping `memory.md` small without ever touching the corrections ledger.
 
 ---
 
@@ -221,6 +222,7 @@ ACI/
 │   ├── voice-and-tone.md          # Writing rules, vocabulary, banned clichés, formatting
 │   ├── icp-and-offers.md          # Target audience, pain points, core offers, pricing
 │   ├── rules.md                   # Universal AI guardrails & operating constraints
+│   ├── archive/                   # Decision Log entries older than 90 days (auto-archived)
 │   └── knowledge/                 # Meeting frameworks, case studies, playbooks
 │       └── CONTEXT.md             # Guide to long-form knowledge assets
 │

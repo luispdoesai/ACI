@@ -28,3 +28,4 @@
 - `2026-09-01`: Initialized ACI open-source framework with 8 operational engines and 3-Tier Blueprint.
 - `2026-09-05`: Implemented deterministic workspace indexer (`automations/scripts/index_workspace.py`) & linked auto-sweep to `brain/workspace_index.md`.
 - `2026-09-10`: Integrated empirical research and academic foundations matrix into `README.md` to formally document system design principles.
+- `2026-09-11`: Built `automations/scripts/archive_memory.py` and wired it into the daily sweep. Decision Log entries older than 90 days now auto-archive to `brain/archive/decision_log_<year>.md`; Corrected Mistakes and Learned Preferences are never pruned.
