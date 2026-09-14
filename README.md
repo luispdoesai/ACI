@@ -58,7 +58,7 @@ Autonomous agents frequently fail by loading dozens of raw files into context, c
 #### 4. Closed-Loop Failure Recovery and Benchmark Promotion
 - Failure Prevention: When a script breaks or output requires correction, the failure mode is logged to `brain/memory.md` under `## 🚫 Corrected Mistakes`. Subsequent sessions check this ledger before generating work.
 - Quality Anchoring: When a deliverable meets production quality, it is stored in that module's `examples/` directory. Future prompts use these proven assets as few-shot references.
-- Anti-Drift: Not every section of `memory.md` should live forever. Corrected Mistakes and Learned Preferences are permanent, but the Recent Decision Log is a dated project journal, so it's the part meant to accumulate. `automations/scripts/archive_memory.py` runs on the daily sweep and moves Decision Log entries older than 90 days into `brain/archive/decision_log_<year>.md`, keeping `memory.md` small without ever touching the corrections ledger.
+- Anti-Drift: Not every section of `memory.md` should live forever. Corrected Mistakes and Learned Preferences are permanent, but the Recent Decision Log is a dated project journal, so it's the part meant to accumulate. `automations/scripts/archive_memory.py` runs on the daily sweep and moves Decision Log entries older than 90 days into `brain/archive/decision_log_<year>_Q<quarter>.md`, keeping `memory.md` small without ever touching the corrections ledger.
 
 ---
 
@@ -175,7 +175,7 @@ pip install -r requirements.txt
 Open your AI assistant in this directory (`claude`, `gemini`, `cursor`, etc.) and paste the following prompt:
 
 ```markdown
-Run the ACI Deep Setup Interview. Read `brain/rules.md` and `CLAUDE.md`, then interview me step-by-step to customize this workspace.
+Run the ACI Deep Setup Interview. Read `brain/rules.md`, `CLAUDE.md`, and `brain/setup-interview.md` for the full phase script, then interview me step-by-step to customize this workspace.
 
 Follow this protocol:
 1. Ask 1-2 focused questions at a time across the 5 phases:
@@ -222,9 +222,10 @@ ACI/
 │   ├── voice-and-tone.md          # Writing rules, vocabulary, banned clichés, formatting
 │   ├── icp-and-offers.md          # Target audience, pain points, core offers, pricing
 │   ├── rules.md                   # Universal AI guardrails & operating constraints
+│   ├── setup-interview.md         # Full 5-phase kickoff interview script (loaded on demand, not every session)
 │   ├── archive/                   # Decision Log entries older than 90 days (auto-archived)
-│   └── knowledge/                 # Meeting frameworks, case studies, playbooks
-│       └── CONTEXT.md             # Guide to long-form knowledge assets
+│   └── knowledge/                 # Meeting frameworks, case studies, playbooks (read on demand, not force-loaded)
+│       └── CONTEXT.md             # Guide to long-form knowledge assets & the file drop-in ingestion rule
 │
 ├── content-engine/                # ✍️ Content Creation & Repurposing System
 │   ├── CONTEXT.md                 # Guided overview & quick prompts for Content Engine
@@ -319,6 +320,22 @@ Once the kickoff interview is complete, you simply converse with your AI natural
   > *"Run validate_leads.py on leads.csv to clean invalid emails and deduplicate the list."*
 - **Teach the AI a new rule**:
   > *"Remember: never use emojis in cold emails, and keep all subject lines under 4 words."* $\rightarrow$ The AI updates `brain/memory.md` immediately.
+- **Feed it a file you already have**:
+  > *"Drop this old case study into `brain/knowledge/` and pull out anything we should reuse in proposals."* $\rightarrow$ The raw file is archived as-is in `brain/knowledge/` (never overwritten by a summary), and the AI extracts only the operationally useful pieces (a stat, a proof point, a phrase) into `identity.md`, `voice-and-tone.md`, `icp-and-offers.md`, or an engine's `examples/`, logging what it did in `memory.md`. Full rule: `brain/knowledge/CONTEXT.md`.
+
+---
+
+## 🪶 Why the Root Files Stay Thin
+
+`CLAUDE.md` and `AGENTS.md` are auto-loaded into **every** session in their respective tools (Claude Code reads `CLAUDE.md`, other agents read `AGENTS.md`), so you pay their token cost on every task, whether it's relevant or not. `README.md`, by contrast, is a human doc: no AI tool reads it automatically, so its length is free at runtime.
+
+That's why the split looks like this:
+- **`README.md`**: long, for humans. Read once when you're getting oriented, never loaded into a task.
+- **`CLAUDE.md` / `AGENTS.md`**: short by design, on purpose. They're a *router*, not a manual: a handful of lines pointing at `brain/`, not the content of `brain/` itself. Anything only needed once (like the full setup interview script) lives in its own file under `brain/` and gets loaded only when that specific thing happens; see `brain/setup-interview.md`.
+- **`brain/*.md`** (identity, voice, ICP, rules, memory): read every task, but kept small and stable on purpose, which is also what makes them cache-friendly (see the Token & Cost Breakdown above).
+- **`brain/knowledge/`**: read on demand only, when a task needs what's in there or a file just landed. Never force-loaded.
+
+If you're extending this repo: new onboarding-only or reference-only content belongs in its own file with a short pointer from `CLAUDE.md`/`AGENTS.md`, not inlined into the router itself.
 
 ---
 

@@ -10,15 +10,18 @@ are always passed through untouched, since a style correction does not expire
 the way a project milestone does.
 
 Decision Log entries older than --days (default 90) are moved out of
-memory.md into brain/archive/decision_log_<year>.md, grouped by the year the
-decision was logged, and de-duplicated against what is already archived.
+memory.md into brain/archive/decision_log_<year>_Q<quarter>.md, grouped by
+the quarter the decision was logged, and de-duplicated against what is
+already archived. Quarterly files (rather than one per year) keep each
+archive small enough to skim and grep by roughly "when this resurfaced" --
+e.g. `decision_log_2026_Q1.md` for anything logged Jan-Mar 2026.
 
 Usage:
     python automations/scripts/archive_memory.py [--days 90] [--dry-run]
 
 Outputs:
-  - brain/memory.md                       (rewritten, Decision Log trimmed)
-  - brain/archive/decision_log_<year>.md  (older entries appended)
+  - brain/memory.md                              (rewritten, Decision Log trimmed)
+  - brain/archive/decision_log_<year>_Q<n>.md    (older entries appended)
 """
 
 import argparse
@@ -62,16 +65,20 @@ def parse_sections(content: str) -> Tuple[List[str], List[Tuple[str, List[str]]]
     return preamble, sections
 
 
+def quarter_of(entry_date: datetime) -> int:
+    return (entry_date.month - 1) // 3 + 1
+
+
 def split_decision_log(
     body: List[str], cutoff: datetime
-) -> Tuple[List[str], Dict[int, List[Tuple[str, str]]], List[str]]:
+) -> Tuple[List[str], Dict[Tuple[int, int], List[Tuple[str, str]]], List[str]]:
     """
-    Separate a Decision Log section's bullet lines into (kept, archived_by_year,
+    Separate a Decision Log section's bullet lines into (kept, archived_by_quarter,
     unparsed). Unparsed lines (no leading date) are kept in place rather than
     risk silently dropping a manually written entry.
     """
     kept: List[str] = []
-    archived: Dict[int, List[Tuple[str, str]]] = {}
+    archived: Dict[Tuple[int, int], List[Tuple[str, str]]] = {}
     unparsed: List[str] = []
 
     for line in body:
@@ -82,20 +89,23 @@ def split_decision_log(
         date_str, text = match.groups()
         entry_date = datetime.strptime(date_str, "%Y-%m-%d")
         if entry_date < cutoff:
-            archived.setdefault(entry_date.year, []).append((date_str, text))
+            key = (entry_date.year, quarter_of(entry_date))
+            archived.setdefault(key, []).append((date_str, text))
         else:
             kept.append(line)
 
     return kept, archived, unparsed
 
 
-def append_to_archive(root_dir: Path, archived: Dict[int, List[Tuple[str, str]]], dry_run: bool) -> List[str]:
-    """Append archived entries to brain/archive/decision_log_<year>.md, de-duplicated."""
+def append_to_archive(
+    root_dir: Path, archived: Dict[Tuple[int, int], List[Tuple[str, str]]], dry_run: bool
+) -> List[str]:
+    """Append archived entries to brain/archive/decision_log_<year>_Q<n>.md, de-duplicated."""
     archive_dir = root_dir / "brain" / "archive"
     written: List[str] = []
 
-    for year, entries in sorted(archived.items()):
-        archive_path = archive_dir / f"decision_log_{year}.md"
+    for (year, quarter), entries in sorted(archived.items()):
+        archive_path = archive_dir / f"decision_log_{year}_Q{quarter}.md"
         existing = archive_path.read_text(encoding="utf-8") if archive_path.exists() else ""
 
         new_lines = [
@@ -110,7 +120,7 @@ def append_to_archive(root_dir: Path, archived: Dict[int, List[Tuple[str, str]]]
             body_lines = existing.rstrip("\n").splitlines()
         else:
             body_lines = [
-                f"# Decision Log Archive — {year}",
+                f"# Decision Log Archive — {year} Q{quarter}",
                 "",
                 "> *Auto-archived from `brain/memory.md` by `automations/scripts/archive_memory.py`.*",
                 "",

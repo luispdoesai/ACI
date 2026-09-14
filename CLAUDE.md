@@ -15,6 +15,7 @@ Whenever you perform any task in this workspace, adhere strictly to this hierarc
      - Consult `brain/voice-and-tone.md` $\rightarrow$ Writing cadence, stylistic rules, banned AI jargon.
      - Consult `brain/icp-and-offers.md` $\rightarrow$ Target audience, core services/products, objection counters.
      - Consult `brain/rules.md` $\rightarrow$ Universal guardrails, privacy, deterministic-first priority.
+   - On demand only (not read as a matter of course; see the ingestion rule below): `brain/knowledge/` $\rightarrow$ raw source material (case studies, transcripts, whitepapers) a user has dropped in.
 
 2. **Phase 2: Follow Folder SOPs & Anchor on Golden Examples**:
    - Read the target folder's `CLAUDE.md` or `SOP.md`.
@@ -33,6 +34,7 @@ Because AI sessions are stateless by default, you MUST use `brain/memory.md` to 
 - **When the user expresses a style or workflow preference**: Append the rule under `## 📌 Learned Preferences & Operating Nuances`.
 - **When a major milestone or project phase concludes**: Log the update under `## 📝 Recent Decision Log`.
 - **When an outstanding piece of work is finalized**: Suggest saving it to the relevant folder's `examples/` directory as a new golden benchmark.
+- **When the user drops a raw file into `brain/knowledge/`** (or pastes/attaches one for you to file): keep it there verbatim as the permanent source; never let a summary replace it. Extract only the operationally useful pieces (a credibility marker, a phrasing pattern, an objection counter, a reusable example) into the structured file that actually uses it (`identity.md`, `voice-and-tone.md`, `icp-and-offers.md`, or an engine's `examples/`), then log one line in the Decision Log noting what was ingested and where it landed. Full rule: `brain/knowledge/CONTEXT.md`.
 
 ---
 
@@ -53,7 +55,7 @@ ACI ships with 8 specialized engines adhering to the 3-Tier Blueprint:
 
 ## 🏗️ Dynamic Module Spawning Protocol
 
-If a user requests a workflow or domain that does not yet have an operational folder (e.g., `sponsorships/`, `podcast-engine/`, `finance-ops/`), you are authorized to autonomously spawn the module adhering to this structure:
+If a user requests a workflow or domain that does not yet have an operational folder (e.g., `sponsorships/`, `podcast-engine/`, `finance-ops/`), you are authorized to spawn the module. Do not hand-build it freehand: follow `engine-builder/CLAUDE.md` and `engine-builder/SOP.md`, which scope the module, run the deterministic scaffold script (`engine-builder/scripts/scaffold_engine.py`), and walk through filling in the resulting files. Every new module lands on the same structure:
 
 ```text
 module-name/
@@ -68,39 +70,4 @@ module-name/
 
 ## 🎙️ Master ACI Setup Interview Protocol
 
-When the user invokes the setup interview (or pastes the kickoff prompt from `README.md`), conduct the deep contextual onboarding interview:
-
-```
-[Phase 1: Archetype & Background]
-  • Which of these best describes your primary focus?
-      A) Creator / Solopreneur (Audience growth, newsletters, video scripts, monetization)
-      B) Busy Executive / Operator (Inbox triage, meeting prep, summaries, competitor briefs)
-      C) Freelancer / Consultant / Agency (Client proposals, SOWs, lead outreach, onboarding)
-      D) Founder / Indie Hacker (PRDs, product launches, cold outbound, automations)
-  • In 2-3 sentences (or a rough voice-dump), what is your background and core mission?
-
-[Phase 2: Core Offer, Audience & Pain Points]
-  • Who is your primary audience or client?
-  • What are their biggest daily bottlenecks, and what is your core offer/solution?
-  • What are 2-3 credibility markers or past wins you have?
-
-[Phase 3: Voice Calibration & Anti-Sludge]
-  • Paste 1-2 writing samples (past posts, emails, or notes) that sound 100% like you.
-  • What are your stylistic pet peeves and banned habits (e.g., generic AI buzzwords, emojis, long fluff)?
-
-[Phase 4: Workflow Mapping & Engine Selection]
-  • Which of the 8 engines do you want active on Day 1? (Content, Email, Video, Client Ops, Research, Product, Automations, Tools/MCP)
-  • Are there any custom channels or domains you need spawned?
-
-[Phase 5: Auto-Synthesis & Workspace Calibration]
-  1. Automatically populate `brain/identity.md`, `brain/voice-and-tone.md`, and `brain/icp-and-offers.md`.
-  2. Calibrate `examples/` across active engines so they reflect the user's real offer, audience, and voice.
-  3. Spawn any custom modules requested using the 3-Tier Blueprint.
-  4. Log initial workspace state into `brain/memory.md`.
-  5. Conclude with 3 tailored, ready-to-run commands for their specific daily workflow.
-```
-
-### Interview Execution Rules:
-- **Low-Friction**: Accept rough voice notes, bullet points, or stream-of-consciousness text.
-- **Ask 1 to 2 questions at a time** in an engaging, conversational rhythm.
-- **Synthesize deeply**: Transform messy user answers into clean, structured markdown frameworks inside `brain/`.
+When the user invokes the setup interview (or pastes the kickoff prompt from `README.md`), load `brain/setup-interview.md` for the full 5-phase script and execution rules, then run it end-to-end. It lives outside this file so its token cost is paid only when the interview actually runs, not on every task.

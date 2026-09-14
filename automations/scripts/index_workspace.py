@@ -179,8 +179,10 @@ def scan_workspace(root_dir: Path) -> List[Dict[str, Any]]:
     return sorted(records, key=lambda x: (x["engine"], x["category"], x["name"]))
 
 
-def generate_index_markdown(records: List[Dict[str, Any]], root_dir: Path) -> str:
-    """Build the high-level markdown navigation map."""
+def generate_index_markdown(records: List[Dict[str, Any]]) -> str:
+    """Build the high-level markdown navigation map. Links are relative (../<path>)
+    so the generated file stays portable across machines and clones, since this
+    file always lives one directory below the repo root, at brain/workspace_index.md."""
     now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
 
     # Aggregate counts
@@ -209,7 +211,7 @@ def generate_index_markdown(records: List[Dict[str, Any]], root_dir: Path) -> st
         lines.append("| Asset | Status | Learned Gotchas / Failure Modes |")
         lines.append("| :--- | :--- | :--- |")
         for item in learnings:
-            lines.append(f"| [`{item['path']}`](file://{root_dir / item['path']}) | `{item['status']}` | {item['learning']} |")
+            lines.append(f"| [`{item['path']}`](../{item['path']}) | `{item['status']}` | {item['learning']} |")
         lines.append("")
         lines.append("---")
         lines.append("")
@@ -236,7 +238,7 @@ def generate_index_markdown(records: List[Dict[str, Any]], root_dir: Path) -> st
             summary_clean = item["summary"].replace("|", "\\|") if item["summary"] else "—"
             if len(summary_clean) > 90:
                 summary_clean = summary_clean[:87] + "..."
-            lines.append(f"| [`{item['name']}`](file://{root_dir / item['path']}) | {status_badge} | {summary_clean} |")
+            lines.append(f"| [`{item['name']}`](../{item['path']}) | {status_badge} | {summary_clean} |")
 
         lines.append("")
 
@@ -263,7 +265,7 @@ def build_and_save_index(root_dir: Optional[Path] = None) -> Dict[str, Any]:
 
     # 1. Write Markdown index
     md_index_path = brain_dir / "workspace_index.md"
-    md_content = generate_index_markdown(records, root_dir)
+    md_content = generate_index_markdown(records)
     md_index_path.write_text(md_content, encoding="utf-8")
 
     # 2. Write JSON index
