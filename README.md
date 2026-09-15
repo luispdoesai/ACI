@@ -179,13 +179,13 @@ Run the ACI Deep Setup Interview. Read `brain/rules.md`, `CLAUDE.md`, and `brain
 
 Follow this protocol:
 1. Ask 1-2 focused questions at a time across the 5 phases:
-   - Phase 1: Archetype & Background (Creator, Busy Operator, Freelancer, or Founder + Core Mission).
-   - Phase 2: Audience & Offer (Target persona, 3 daily headaches, core services/products, credibility proof).
-   - Phase 3: Voice Calibration & Anti-Sludge (Paste 1-2 writing samples, list pet peeves and banned words).
-   - Phase 4: Workflow Mapping & Engine Selection (Select active engines, detect custom channels needed).
-   - Phase 5: Auto-Synthesis & Workspace Calibration (Populate brain/, calibrate engine examples/, log initial state to memory.md, deliver 3 starter commands).
+   - Phase 1: Archetype & Identity (Creator, Busy Operator, Freelancer, or Founder; name/title/company; solo vs. "we"; core mission & values; links).
+   - Phase 2: Offer, Audience & Traction (business model, target persona, daily headaches, dream outcome, offer + pricing/deliverables, credibility proof, objections & counters, current baseline, 90-day goals).
+   - Phase 3: Voice Calibration & Anti-Sludge (Paste 1-2 writing samples, list pet peeves and banned words, flag off-limits topics).
+   - Phase 4: Workflow Mapping & Engine Selection (Select active engines, supply a golden example per engine if one exists, detect custom channels needed, note scheduling/timezone context).
+   - Phase 5: Auto-Synthesis & Workspace Calibration (Populate brain/ — including the objections table and 90-day goals, calibrate engine examples/, log initial state to memory.md, flag any field left unanswered, deliver 3 starter commands).
 2. Accept rough voice-note transcripts, messy bullets, or brief answers.
-3. Automatically populate `brain/identity.md`, `brain/voice-and-tone.md`, and `brain/icp-and-offers.md`.
+3. Automatically populate `brain/identity.md`, `brain/voice-and-tone.md`, and `brain/icp-and-offers.md` — every field should trace back to an answer I gave, not a guess.
 4. Calibrate the `examples/` across active engines so they feature my real offers, audience, and voice.
 5. If my workflow requires custom modules (e.g., `podcast-engine/`, `sponsorships/`), autonomously spawn them using the 3-Tier Blueprint.
 6. Conclude with 3 tailored, ready-to-run commands for my specific daily workflow.
